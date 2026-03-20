@@ -1,0 +1,53 @@
+Meeting Transcript — Customer Portal Project Kickoff
+Date: 2025-01-15
+Attendees: Sarah (Product Owner), James (Tech Lead), Priya (BA), Client: Mark (CTO), Lisa (Head of Sales)
+
+Mark: Thanks everyone for joining. So the main goal here is to build a self-service customer portal that lets our enterprise clients manage their accounts, view invoices, raise support tickets, and track their subscription usage without calling our support team every time.
+
+Sarah: That aligns with what we scoped. We're thinking web-based, accessible from desktop and mobile.
+
+James: From a tech perspective, we'll need Single Sign-On because most enterprise clients are on Azure AD or Okta. Hard requirement for them.
+
+Mark: Yes, absolutely. Our IT policy won't allow separate username/password accounts for external systems anymore. SSO via SAML 2.0 or OAuth 2.0 is mandatory.
+
+Lisa: From sales side, clients keep asking for a dashboard that shows their subscription tier, usage statistics, and renewal dates. We lose deals because competitors offer this.
+
+Priya: So that's the account dashboard. Can you be more specific about usage statistics, Lisa?
+
+Lisa: They want to see API call counts, number of active users on their license, and data storage used. Updated daily is fine, real-time would be better.
+
+Mark: Daily refresh is acceptable for the MVP. Real-time is a Phase 2 thing.
+
+James: For invoices — are we generating them in the portal or just displaying ones from the billing system?
+
+Mark: Displaying only. We use Stripe for billing. The portal should pull invoices from Stripe and display PDF downloads. No invoice creation in this system.
+
+Sarah: Support tickets — are we building a ticketing system or integrating with existing?
+
+Mark: We have Zendesk. Clients should be able to raise, view, and update tickets directly from the portal. Integration with Zendesk API.
+
+Priya: What about user management within the portal? Can a client admin add sub-users?
+
+Mark: Yes. Each enterprise client has an admin user who can invite team members, set their roles (read-only vs admin), and deactivate accounts.
+
+James: RBAC — Role-Based Access Control. Client admin vs client team member roles at minimum.
+
+Mark: Correct. And our internal staff should have a super-admin view to see all clients, impersonate users for support, and manage the platform.
+
+Sarah: So three roles: Client Admin, Client Team Member, Platform Super-Admin.
+
+James: Performance — this needs to handle about 500 concurrent users at launch, scaling to 2000 within 18 months.
+
+Mark: And it needs to be GDPR compliant. Our clients are mainly in the EU.
+
+Priya: Any mobile app requirement or just responsive web?
+
+Mark: Responsive web for now. Native apps are out of scope for this phase.
+
+Lisa: One more thing — clients want email notifications when invoices are ready and when ticket status changes.
+
+Mark: Yes, email notifications for: new invoice available, ticket status change, and subscription renewal reminder 30 days before renewal.
+
+James: We should set a timeline. MVP in 6 months?
+
+Mark: We're targeting go-live by end of Q3. That gives you roughly 20 weeks.

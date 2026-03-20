@@ -1,0 +1,134 @@
+STATEMENT OF WORK
+Project: Enterprise Customer Self-Service Portal
+Client: Acme Corp
+Vendor: TechSolutions Ltd
+Date: 2025-01-10
+Version: 1.2
+
+---
+
+1. PROJECT OVERVIEW
+
+TechSolutions Ltd will design, develop, test, and deploy a web-based self-service portal
+for Acme Corp's enterprise clients. The portal will enable clients to manage their
+accounts, subscriptions, invoices, and support interactions without requiring direct
+assistance from Acme Corp's support team.
+
+Expected outcome: 40% reduction in Level 1 support tickets within 6 months of go-live.
+
+---
+
+2. OBJECTIVES
+
+- Provide enterprise clients with 24/7 self-service access to their account information
+- Integrate seamlessly with Acme Corp's existing technology stack (Stripe, Zendesk)
+- Implement enterprise-grade security including SSO and RBAC
+- Ensure GDPR compliance for EU-based clients
+- Deliver an intuitive, responsive web experience
+
+---
+
+3. DELIVERABLES
+
+Phase 1 (MVP — 20 weeks):
+  D1. Authentication module with SSO (SAML 2.0 / OAuth 2.0)
+  D2. Client dashboard (subscription, usage, renewal)
+  D3. Invoice management (Stripe integration, PDF download)
+  D4. Support ticket management (Zendesk integration)
+  D5. User management (RBAC — Client Admin, Client Member, Super Admin)
+  D6. Email notification system (3 trigger types)
+  D7. Admin portal for Platform Super-Admins
+  D8. Technical documentation
+  D9. UAT test scripts and sign-off
+
+Phase 2 (Future — out of scope for this SOW):
+  - Real-time usage metrics
+  - Native mobile applications (iOS/Android)
+  - In-portal live chat
+  - Client-facing analytics reports
+
+---
+
+4. TECHNICAL REQUIREMENTS
+
+4.1 Frontend
+  - Responsive web application (desktop, tablet, mobile browser)
+  - Modern UI framework (React or Vue.js — TBD)
+  - WCAG 2.1 AA accessibility compliance
+
+4.2 Backend
+  - RESTful API architecture
+  - Token-based authentication (JWT)
+  - All APIs documented with OpenAPI / Swagger
+
+4.3 Integrations
+  - Stripe API (invoices, subscription data)
+  - Zendesk API (ticket CRUD operations)
+  - Identity providers: Azure AD, Okta (via SAML 2.0 or OAuth 2.0)
+  - Email service: SendGrid or AWS SES (TBD)
+
+4.4 Infrastructure
+  - Cloud-hosted (AWS or Azure — TBD with client)
+  - CI/CD pipeline with automated testing
+  - 99.9% uptime SLA
+
+4.5 Security
+  - GDPR-compliant data handling and storage
+  - All data encrypted in transit (TLS 1.2+) and at rest (AES-256)
+  - OWASP Top 10 compliance
+  - Regular security scans
+
+4.6 Performance
+  - Page load time < 3 seconds on standard 4G connection
+  - Support 500 concurrent users at launch
+  - Scalable to 2,000 concurrent users within 18 months
+
+---
+
+5. ASSUMPTIONS
+
+- Acme Corp will provide access to Stripe and Zendesk API credentials by Week 2
+- Acme Corp's IT team will configure Azure AD / Okta for SAML by Week 3
+- Existing Stripe invoice data is accessible via Stripe API
+- Zendesk tickets are accessible via Zendesk REST API with standard permissions
+- Client branding assets (logo, colour palette) provided by Week 1
+
+---
+
+6. OUT OF SCOPE
+
+- Invoice generation or billing management
+- Real-time data streaming
+- Native mobile applications
+- In-portal payment processing
+- Data migration from legacy systems
+- Custom reporting or analytics beyond the defined dashboard
+
+---
+
+7. TIMELINE
+
+Week 1-2:   Requirements finalisation and design
+Week 3-6:   Authentication and user management
+Week 7-10:  Dashboard, invoices, Stripe integration
+Week 11-14: Support tickets, Zendesk integration, notifications
+Week 15-17: Admin portal
+Week 18-19: Testing (SIT + UAT)
+Week 20:    Go-live and hypercare
+
+---
+
+8. ACCEPTANCE CRITERIA
+
+- All D1-D9 deliverables completed and signed off by Acme Corp
+- All critical and high defects resolved before go-live
+- Performance benchmarks met under load testing
+- Security assessment passed
+- UAT sign-off obtained from designated Acme Corp stakeholders
+
+---
+
+9. CHANGE MANAGEMENT
+
+Any changes to scope, timeline, or budget require a signed Change Request.
+Changes will be assessed within 5 business days.

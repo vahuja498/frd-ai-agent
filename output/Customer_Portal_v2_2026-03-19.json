@@ -1,0 +1,48 @@
+{
+  "project_name": "Customer Portal v2",
+  "frd": "# Functional Requirement Document\n\n## Customer Portal v2\n### Version: 1.0 | Date: 2026-03-19 | Status: Draft | Prepared by: FRD AI Agent\n\n\n---\n\n## 1. Business Objective\n* [2-4 sentence summary of what the project aims to achieve and why](#business-objective)\n* Expected to reduce HR admin workload by 30% and improve employee satisfaction scores.\n\n### Description\nThis Customer Portal V2 aims to enhance the employee self-service experience, reducing administrative burden on HR teams while improving employee satisfaction. The portal will enable employees to manage their HR information, view payslips, apply for leave, update personal details, and more without requiring direct contact with the HR team.\n\n\n---\n\n## 2. Scope\n### In Scope:\n* Employee authentication via Azure AD Single Sign-On (SSO)\n* Employee dashboard (leave balance, upcoming holidays, recent payslips)\n* Leave application and approval workflow\n* Payslip viewing and PDF download (integration with Sage Payroll)\n* Personal details update (address, emergency contact, bank details)\n* Manager approval workflow for leave requests\n* Email notifications for leave approval/rejection\n\n### Out of Scope:\n* Payroll processing or calculation\n* Recruitment or onboarding\n* Performance management\n* Mobile application (Phase 2)\n\n---\n\n## 3. Stakeholders\n| Name / Role | Type | Responsibility |\n|---|---|---|\n| Emma Clarke | Product Owner | Requirements sign-off, UAT |\n| Michael Banks | HR Director | Business process definition |\n| Raj Patel | IT Manager | Infrastructure, SSO config |\n\n---\n\n## 4. Assumptions\n* Azure AD is already configured and employee accounts exist.\n* Sage Payroll API supports read access for payslip data.\n* All employees have corporate email addresses.\n\n---\n\n## 5. Functional Requirements\n\n### FR-01: Employee Login via SSO\n#### Description:\n* Employees must authenticate using Azure AD Single Sign-On (SSO).\n* No separate username/password shall be created.\n\n#### Actor:\n* Employee\n\n#### Priority:\n* High\n\n#### Source:\n* Explicit\n\n#### Acceptance Criteria:\n\n1. Employee clicks \"Sign In\" and is redirected to Azure AD login page\n2. On successful Azure AD authentication, employee is redirected to the portal dashboard\n3. Failed authentication displays an appropriate error message\n\n### FR-02: View Employee Dashboard\n#### Description:\n* Upon login, employee sees a personalised dashboard showing:\n\t+ Leave balance\n\t+ Upcoming holidays\n\t+ Last 3 payslips\n\t+ Pending actions\n\n#### Actor:\n* Employee\n\n#### Priority:\n* High\n\n#### Source:\n* Explicit\n\n#### Acceptance Criteria:\n\n1. Dashboard loads within 2 seconds\n2. Leave balance reflects current approved/pending leave\n3. Payslip section shows most recent 3 months\n\n### FR-03: Apply for Leave\n#### Description:\n* Employee can submit a leave request specifying:\n\t+ Leave type\n\t+ Start date\n\t+ End date\n\t+ Optional notes\n* Request is routed to their line manager for approval.\n\n#### Actor:\n* Employee\n\n#### Priority:\n* High\n\n#### Source:\n* Explicit\n\n#### Acceptance Criteria:\n\n1. Employee can select from available leave types (Annual, Sick, Unpaid)\n2. System validates leave balance before submission\n3. Manager receives email notification within 5 minutes of submission\n4. Approved leave appears in shared team calendar\n\n### FR-04: Update Personal Details\n#### Description:\n* Employees can update their home address, emergency contact, and bank details.\n* Changes require re-authentication (step-up auth) for bank detail updates.\n\n#### Actor:\n* Employee\n\n#### Priority:\n* Medium\n\n#### Source:\n* Explicit\n\n#### Acceptance Criteria:\n\n1. Address and emergency contact changes save immediately\n2. Bank detail changes require password re-entry before saving\n3. All changes generate an audit log entry\n\n### FR-05: View Payslips\n#### Description:\n* Employees can view a history of their payslips and download individual payslips as PDF documents.\n* Data sourced from Sage Payroll API.\n\n#### Actor:\n* Employee\n\n#### Priority:\n* Medium\n\n#### Source:\n* Explicit\n\n#### Acceptance Criteria:\n\n1. Payslips are listed in reverse chronological order\n2. Each payslip shows date, gross pay, net pay, and deductions summary\n3. PDF download completes within 3 seconds\n4. Payslips are accessible for the previous 24 months\n\n### FR-06: Update Manager Details\n#### Description:\n* Employees can update their manager's contact details.\n* Changes require re-authentication (step-up auth) for bank detail updates.\n\n#### Actor:\n* Employee\n\n#### Priority:\n* Medium\n\n#### Source:\n* Explicit\n\n#### Acceptance Criteria:\n\n1. Address and emergency contact changes save immediately\n2. Bank detail changes require password re-entry before saving\n3. All changes generate an audit log entry\n\n---\n\n## 6. Non-Functional Requirements\n\n| ID | Category | Description | Metric / Target |\n|---|---|---|---|\n| NFR-01: Performance | Category: Performance | Pages must load within 3 seconds under normal load | p95 page load time < 3s with 200 concurrent users |\n\n| ID | Category | Description | Metric / Target |\n|---|---|---|---|\n| NFR-02: Availability | Category: Availability | System must be available 99.5% of the time excluding planned maintenance | Monthly uptime >= 99.5%, maintenance windows < 4 hours/month |\n\n| ID | Category | Description | Metric / Target |\n|---|---|---|---|\n| NFR-03: Security | Category: Security | All data encrypted in transit and at rest. OWASP Top 10 compliance required | Zero critical security vulnerabilities in pre-launch penetration test |\n\n| ID | Category | Description | Metric / Target |\n|---|---|---|---|\n| NFR-04: GDPR Compliance | Category: Compliance | All personal data must be handled in accordance with GDPR. Employee data retained for maximum 7 years after employment end | GDPR audit passed prior to go-live |\n\n---\n\n## 7. Business Rules\n\n### BR-01: An employee cannot approve their own leave request.\n#### Description:\n* Leave cannot be approved retroactively for dates in the past.\n\n#### Actor:\n* Employee\n\n#### Priority:\n* High\n\n#### Source:\n* Explicit\n\n#### Acceptance Criteria:\n\n1. Employee can select from available leave types (Annual, Sick, Unpaid)\n2. System validates leave balance before submission\n3. Manager receives email notification within 5 minutes of submission\n4. Approved leave appears in shared team calendar\n\n### BR-02: Leave cannot be applied retroactively for dates in the past.\n#### Description:\n* Leave cannot be applied to dates that have already passed.\n\n#### Actor:\n* Employee\n\n#### Priority:\n* High\n\n#### Source:\n* Explicit\n\n#### Acceptance Criteria:\n\n1. Employee can select from available leave types (Annual, Sick, Unpaid)\n2. System validates leave balance before submission\n3. Manager receives email notification within 5 minutes of submission\n4. Approved leave appears in shared team calendar\n\n### BR-03: Sick leave does not require manager approval but does trigger an HR notification.\n#### Description:\n* Leave applies directly to the employee's own record.\n\n#### Actor:\n* Employee\n\n#### Priority:\n* High\n\n#### Source:\n* Explicit\n\n#### Acceptance Criteria:\n\n1. Employee can select from available leave types (Annual, Sick, Unpaid)\n2. System validates leave balance before submission\n3. Manager receives email notification within 5 minutes of submission\n\n### BR-04: An employee with zero leave balance cannot submit an annual leave request.\n#### Description:\n* Leave applies directly to the employee's own record.\n\n#### Actor:\n* Employee\n\n#### Priority:\n* High\n\n#### Source:\n* Explicit\n\n#### Acceptance Criteria:\n\n1. Employee can select from available leave types (Annual, Sick, Unpaid)\n2. System validates leave balance before submission\n3. Manager receives email notification within 5 minutes of submission\n\n### BR-05: Bank detail changes take effect from the next payroll run, not immediately.\n#### Description:\n* Changes generate an audit log entry.\n\n#### Actor:\n* Employee\n\n#### Priority:\n* Medium\n\n#### Source:\n* Explicit\n\n#### Acceptance Criteria:\n\n1. Address and emergency contact changes save immediately\n2. All changes generate an audit log entry",
+  "frd_structured": null,
+  "validation": {
+    "issues": [
+      {
+        "severity": "Critical",
+        "location": "Section: Dependencies",
+        "detail": "Required section 'Dependencies' is missing from the FRD."
+      },
+      {
+        "severity": "Critical",
+        "location": "Section: Process Flow",
+        "detail": "Required section 'Process Flow' is missing from the FRD."
+      },
+      {
+        "severity": "Critical",
+        "location": "Section: Edge Cases",
+        "detail": "Required section 'Edge Cases' is missing from the FRD."
+      },
+      {
+        "severity": "Critical",
+        "location": "Section: Risks",
+        "detail": "Required section 'Risks' is missing from the FRD."
+      },
+      {
+        "severity": "Critical",
+        "location": "Section: Open Questions",
+        "detail": "Required section 'Open Questions' is missing from the FRD."
+      }
+    ],
+    "suggested_improvements": [
+      "Add the following missing sections: Dependencies, Process Flow, Edge Cases, Risks, Open Questions"
+    ],
+    "missing_sections": [
+      "Dependencies",
+      "Process Flow",
+      "Edge Cases",
+      "Risks",
+      "Open Questions"
+    ],
+    "total_issues": 5
+  },
+  "confidence_score": 0,
+  "rag_sources_used": 3,
+  "model_used": "ollama/llama3.2:1b"
+}

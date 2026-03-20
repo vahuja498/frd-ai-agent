@@ -1,0 +1,178 @@
+FUNCTIONAL REQUIREMENT DOCUMENT
+Project: Employee Self-Service HR Portal
+Version: 1.0 | Date: 2024-06-01 | Status: Approved
+
+---
+
+1. BUSINESS OBJECTIVE
+Enable employees to manage their HR information, view payslips, apply for leave, and
+update personal details without contacting the HR team directly. Expected to reduce
+HR admin workload by 30% and improve employee satisfaction scores.
+
+---
+
+2. SCOPE
+
+In Scope:
+- Employee authentication via Azure AD SSO
+- Employee dashboard (leave balance, upcoming holidays, recent payslips)
+- Leave application and approval workflow
+- Payslip viewing and PDF download (integration with Sage Payroll)
+- Personal details update (address, emergency contact, bank details)
+- Manager approval workflow for leave requests
+- Email notifications for leave approval/rejection
+
+Out of Scope:
+- Payroll processing or calculation
+- Recruitment or onboarding
+- Performance management
+- Mobile application (Phase 2)
+
+---
+
+3. STAKEHOLDERS
+
+| Role | Name | Responsibility |
+|------|------|----------------|
+| Product Owner | Emma Clarke | Requirements sign-off, UAT |
+| HR Director | Michael Banks | Business process definition |
+| IT Manager | Raj Patel | Infrastructure, SSO config |
+| End Users | All employees | System consumers |
+
+---
+
+4. ASSUMPTIONS
+
+- Azure AD is already configured and employee accounts exist
+- Sage Payroll API supports read access for payslip data
+- All employees have corporate email addresses
+- Manager-employee relationships are maintained in Azure AD
+
+---
+
+5. FUNCTIONAL REQUIREMENTS
+
+FR-01: Employee Login via SSO
+Description: Employees must authenticate using Azure AD Single Sign-On.
+No separate username/password shall be created.
+Actor: Employee
+Priority: High
+Source: Explicit
+Acceptance Criteria:
+  1. Employee clicks "Sign In" and is redirected to Azure AD login page
+  2. On successful Azure AD authentication, employee is redirected to the portal dashboard
+  3. Failed authentication displays an appropriate error message
+  4. Session expires after 8 hours of inactivity
+
+FR-02: View Employee Dashboard
+Description: Upon login, employee sees a personalised dashboard showing:
+leave balance, upcoming holidays, last 3 payslips, and pending actions.
+Actor: Employee
+Priority: High
+Source: Explicit
+Acceptance Criteria:
+  1. Dashboard loads within 2 seconds
+  2. Leave balance reflects current approved/pending leave
+  3. Payslip section shows most recent 3 months
+
+FR-03: Apply for Leave
+Description: Employee can submit a leave request specifying leave type, start date,
+end date, and optional notes. Request is routed to their line manager for approval.
+Actor: Employee
+Priority: High
+Source: Explicit
+Acceptance Criteria:
+  1. Employee can select from available leave types (Annual, Sick, Unpaid)
+  2. System validates leave balance before submission
+  3. Manager receives email notification within 5 minutes of submission
+  4. Employee receives email confirmation of submission
+
+FR-04: Manager Approve / Reject Leave
+Description: Line managers can view pending leave requests and approve or reject with comments.
+Actor: Manager
+Priority: High
+Source: Explicit
+Acceptance Criteria:
+  1. Manager sees all pending requests for their direct reports
+  2. Approval/rejection updates employee leave balance immediately
+  3. Employee receives email notification of decision within 5 minutes
+  4. Approved leave appears in shared team calendar
+
+FR-05: View and Download Payslips
+Description: Employees can view a history of their payslips and download individual
+payslips as PDF documents. Data sourced from Sage Payroll API.
+Actor: Employee
+Priority: Medium
+Source: Explicit
+Acceptance Criteria:
+  1. Payslips are listed in reverse chronological order
+  2. Each payslip shows date, gross pay, net pay, and deductions summary
+  3. PDF download completes within 3 seconds
+  4. Payslips are accessible for the previous 24 months
+
+FR-06: Update Personal Details
+Description: Employees can update their home address, emergency contact, and bank details.
+Changes require re-authentication (step-up auth) for bank detail updates.
+Actor: Employee
+Priority: Medium
+Source: Explicit
+Acceptance Criteria:
+  1. Address and emergency contact changes save immediately
+  2. Bank detail changes require password re-entry before saving
+  3. All changes generate an audit log entry
+  4. HR team receives email summary of personal detail changes daily
+
+---
+
+6. NON-FUNCTIONAL REQUIREMENTS
+
+NFR-01: Performance
+Category: Performance
+Description: All pages must load within 3 seconds under normal load.
+Metric: p95 page load time < 3s with 200 concurrent users.
+
+NFR-02: Availability
+Category: Availability
+Description: System must be available 99.5% of the time excluding planned maintenance.
+Metric: Monthly uptime >= 99.5%, maintenance windows < 4 hours/month.
+
+NFR-03: Security
+Category: Security
+Description: All data encrypted in transit and at rest. OWASP Top 10 compliance required.
+Metric: Zero critical security vulnerabilities in pre-launch penetration test.
+
+NFR-04: GDPR Compliance
+Category: Compliance
+Description: All personal data must be handled in accordance with GDPR.
+Employee data retained for maximum 7 years after employment end.
+Metric: GDPR audit passed prior to go-live.
+
+---
+
+7. BUSINESS RULES
+
+BR-01: An employee cannot approve their own leave request.
+BR-02: Leave cannot be applied retroactively for dates in the past.
+BR-03: Sick leave does not require manager approval but does trigger an HR notification.
+BR-04: An employee with zero leave balance cannot submit an annual leave request.
+BR-05: Bank detail changes take effect from the next payroll run, not immediately.
+
+---
+
+8. RISKS
+
+R-01: Sage Payroll API access unavailable
+Likelihood: Medium | Impact: High
+Mitigation: Obtain API credentials in Week 1; fallback to manual payslip upload if API delayed.
+
+R-02: Azure AD SSO configuration delay
+Likelihood: Low | Impact: High
+Mitigation: Parallel-track SSO setup; document setup guide; involve IT team from Day 1.
+
+---
+
+9. OPEN QUESTIONS
+
+OQ-01: Should employees be able to cancel an approved leave request after manager approval?
+OQ-02: What is the maximum leave request duration allowed in a single request?
+OQ-03: Should the system support multiple managers for matrix-managed employees?

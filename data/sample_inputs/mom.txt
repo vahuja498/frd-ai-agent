@@ -1,0 +1,69 @@
+MINUTES OF MEETING — Customer Portal Project
+Date: 2025-01-15
+Meeting Type: Project Kickoff
+Attendees: Sarah (Product Owner), James (Tech Lead), Priya (BA), Mark (Client CTO), Lisa (Client Head of Sales)
+Recorded by: Priya
+
+---
+
+DECISIONS MADE:
+
+1. Project Goal
+   - Build a self-service web portal for enterprise clients
+   - Reduce support call volume by allowing self-service for top 5 support categories
+
+2. Authentication
+   - SSO via SAML 2.0 or OAuth 2.0 (MANDATORY — client IT policy)
+   - Support Azure AD and Okta as identity providers
+   - No standalone username/password authentication
+
+3. Account Dashboard
+   - Show: subscription tier, API call usage, active user count, data storage used, renewal date
+   - Data refresh: daily for MVP; real-time in Phase 2
+   - Source: internal usage database (TBD — James to confirm schema)
+
+4. Invoice Management
+   - Source: Stripe billing system
+   - Display invoice history with PDF download
+   - No invoice creation in this portal — display only
+   - James to confirm Stripe API access credentials with Mark's team
+
+5. Support Tickets
+   - Integration with Zendesk API
+   - Clients can: raise new ticket, view ticket list, view ticket detail, add comments
+   - Status updates should trigger email notification
+   - Priya to document Zendesk API integration requirements separately
+
+6. User Management
+   - Client Admin can: invite team members, assign roles, deactivate users
+   - Roles defined: Client Admin, Client Team Member, Platform Super-Admin
+   - Platform Super-Admin: view all clients, impersonate user (for support), manage platform settings
+
+7. Email Notifications
+   - Trigger 1: New invoice available
+   - Trigger 2: Support ticket status changed
+   - Trigger 3: Subscription renewal reminder — 30 days before renewal date
+   - Email provider: TBD (James to recommend — SendGrid or AWS SES)
+
+8. Non-Functional
+   - GDPR compliance required (EU clients)
+   - 500 concurrent users at launch; 2000 within 18 months
+   - Responsive web only — no native mobile apps this phase
+   - Target go-live: end of Q3 (approx 20 weeks)
+
+---
+
+ACTION ITEMS:
+
+| # | Action | Owner | Due |
+|---|--------|-------|-----|
+| 1 | Confirm internal usage database schema | James | 2025-01-22 |
+| 2 | Arrange Stripe API access | Mark | 2025-01-22 |
+| 3 | Document Zendesk API integration spec | Priya | 2025-01-29 |
+| 4 | Recommend email notification provider | James | 2025-01-22 |
+| 5 | Confirm Okta / Azure AD SAML config details | Mark | 2025-01-22 |
+| 6 | Create wireframes for dashboard and ticket views | Sarah | 2025-02-05 |
+
+---
+
+NEXT MEETING: 2025-01-22 — Requirements Review
