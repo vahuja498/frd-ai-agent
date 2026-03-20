@@ -2,6 +2,7 @@
 app/main.py
 FastAPI application factory.
 Handles startup (vector store indexing) and includes all routes including webhooks.
+Optimized for Replit: Vector store disabled to avoid HuggingFace rate limiting.
 """
 from contextlib import asynccontextmanager
 from pathlib import Path
@@ -9,7 +10,6 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.config import settings
 from app.routes.frd_routes import router as frd_router, init_services
-from app.services.vector_store import VectorStoreService    
 from app.services.llm_service import LLMService
 
 # Import webhook handler
@@ -26,40 +26,30 @@ except ImportError:
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """
-    Startup: initialise vector store and LLM service.       
-    Index sample FRDs if vector store is empty.
+    Startup: initialise LLM service.
+    Vector store disabled for Replit (HuggingFace rate limiting).
     """
     print("\n" + "="*60)
     print("  FRD AI Agent — Starting Up")
     print("="*60)
     
-    # Initialise vector store
-    vector_store = VectorStoreService()
-    
-    # Auto-index FRDs from data/frds/ if store is empty     
-    if vector_store.total_chunks == 0:
-        frds_dir = Path("data/frds")
-        if frds_dir.exists():
-            print(f"[Startup] Indexing FRDs from: {frds_dir}")
-            count = vector_store.index_frds_from_directory(str(frds_dir))
-            print(f"[Startup] Indexed {count} FRD chunks")  
-        else:
-            print("[Startup] No FRDs directory found — vector store will be empty")
-            print("[Startup] Place .txt FRD files in data/frds/ to enable RAG")
+    # Disable vector store for Replit testing (HuggingFace rate limits)
+    print("[Startup] Vector store: DISABLED (Replit mode)")
+    print("[Startup] RAG functionality: Limited")
+    vector_store = None
     
     # Initialise LLM service
     llm_service = LLMService()
     
-    # Inject into routes
+    # Inject into routes (vector_store=None means RAG disabled)
     init_services(vector_store, llm_service)
     
-    print(f"[Startup] Vector store: {vector_store.total_chunks} chunks ready")
     print(f"[Startup] LLM: {llm_service.model_name}")       
     print("[Startup] API ready at http://localhost:8000")   
     print("[Startup] Docs at   http://localhost:8000/docs")
     
     if webhook_router:
-        print("[Startup] Webhooks enabled at /webhooks/*")
+        print("[Startup] ✓ Webhooks enabled at /webhooks/*")
     
     print("="*60 + "\n")
     yield
@@ -76,7 +66,7 @@ def create_app() -> FastAPI:
         description=(
             "AI-powered Functional Requirement Document generator. "
             "Upload project documents (transcript, MoM, SOW) and receive "
-            "a complete structured FRD using RAG + LLM. "
+            "a complete structured FRD using LLM. "
             "Integrates with Azure DevOps for real-time FRD generation via webhooks."
         ),
         version="1.0.0",
