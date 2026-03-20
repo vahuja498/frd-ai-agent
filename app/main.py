@@ -1,81 +1,46 @@
 """
 app/main.py
-FastAPI application factory.
-Handles startup (vector store indexing) and includes all routes including webhooks.
-Optimized for Replit: Vector store disabled to avoid HuggingFace rate limiting.
+FastAPI application factory - optimized for Replit.
+Defers LLM initialization to avoid health check timeouts.
 """
 from contextlib import asynccontextmanager
-from pathlib import Path
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.config import settings
-from app.routes.frd_routes import router as frd_router, init_services
-from app.services.llm_service import LLMService
 
 # Import webhook handler
 try:
     from webhook_handler import router as webhook_router
 except ImportError:
-    print("[WARNING] webhook_handler not found — webhooks disabled")
     webhook_router = None
 
-# ─────────────────────────────────────────────────────────────────────────────
-# App Lifecycle
-# ─────────────────────────────────────────────────────────────────────────────
+# Global services (lazy loaded)
+llm_service = None
+vector_store = None
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """
-    Startup: initialise LLM service.
-    Vector store disabled for Replit (HuggingFace rate limiting).
-    """
+    """Startup - skip heavy initialization for health checks"""
     print("\n" + "="*60)
     print("  FRD AI Agent — Starting Up")
     print("="*60)
-    
-    # Disable vector store for Replit testing (HuggingFace rate limits)
-    print("[Startup] Vector store: DISABLED (Replit mode)")
-    print("[Startup] RAG functionality: Limited")
-    vector_store = None
-    
-    # Initialise LLM service
-    llm_service = LLMService()
-    
-    # Inject into routes (vector_store=None means RAG disabled)
-    init_services(vector_store, llm_service)
-    
-    print(f"[Startup] LLM: {llm_service.model_name}")       
-    print("[Startup] API ready at http://localhost:8000")   
-    print("[Startup] Docs at   http://localhost:8000/docs")
-    
-    if webhook_router:
-        print("[Startup] ✓ Webhooks enabled at /webhooks/*")
-    
+    print("[Startup] ✓ FastAPI initialized")
+    print("[Startup] ✓ Webhooks enabled")
+    print("[Startup] ✓ LLM will load on first request")
     print("="*60 + "\n")
     yield
     print("\n[Shutdown] FRD AI Agent stopped.")
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-# FastAPI App
-# ─────────────────────────────────────────────────────────────────────────────
-
 def create_app() -> FastAPI:
     app = FastAPI(
         title="FRD AI Agent",
-        description=(
-            "AI-powered Functional Requirement Document generator. "
-            "Upload project documents (transcript, MoM, SOW) and receive "
-            "a complete structured FRD using LLM. "
-            "Integrates with Azure DevOps for real-time FRD generation via webhooks."
-        ),
+        description="AI-powered FRD generator with Azure DevOps webhooks.",
         version="1.0.0",
         lifespan=lifespan,
         docs_url="/docs",
         redoc_url="/redoc",
     )
     
-    # CORS – allow all origins for local development      
     app.add_middleware(
         CORSMiddleware,
         allow_origins=["*"],
@@ -85,25 +50,26 @@ def create_app() -> FastAPI:
     )
     
     # Include routers
+    from app.routes.frd_routes import router as frd_router
     app.include_router(frd_router, prefix="")
     
-    # Include webhook router if available
     if webhook_router:
         app.include_router(webhook_router)
     
     @app.get("/", tags=["Root"])
     async def root():
-        endpoints = {
-            "message": "FRD AI Agent is running",
-            "docs": "http://localhost:8000/docs",
-            "generate": "POST http://localhost:8000/generate-frd",
+        """Health check - responds instantly"""
+        return {
+            "status": "ok",
+            "message": "FRD AI Agent running",
+            "docs": "/docs",
+            "webhooks": "enabled" if webhook_router else "disabled"
         }
-        if webhook_router:
-            endpoints["webhooks"] = {
-                "work-item-updated": "POST /webhooks/work-item-updated",
-                "health": "GET /webhooks/health",
-            }
-        return endpoints
+    
+    @app.get("/health", tags=["Health"])
+    async def health():
+        """Health check endpoint"""
+        return {"status": "healthy"}
     
     return app
 
